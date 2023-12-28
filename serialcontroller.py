@@ -1,20 +1,67 @@
 import serial
 import time
 import multiprocessing as mp
+import os
+import signal
 
 
-microbit = serial.Serial("COM5",115200,timeout = 0.001)
-x=0
+previous_run = 0
 clean = 0
-while x<100:
-    microbit.write(b'4040\n')
-    data = microbit.readline().decode('utf-8').rstrip()
-    if len(data)==3:
-        clean = data
+current = "none"
 
-    print(clean)
-    x+=1
+def straight(speed):
+    global clean
+    compass_vals = []
 
+    microbit = serial.Serial("COM5",115200,timeout = 0.001)
+    x = 0
 
-microbit.close() 
- 
+    ##Gets four compass readings and avergaes for accurate initial
+    ##direction
+    
+    while x < 15:
+        microbit.write(b"000000\n")
+        data = microbit.readline().decode('utf-8').rstrip()
+        print(data)
+        if len(data)==3:
+            clean = data
+            print(clean)
+            compass_vals.append(int(clean))
+        x=x+1
+        
+    init_direction = sum(compass_vals)/len(compass_vals)
+    print(init_direction)
+
+    speed_left = speed
+    speed_right = speed
+    base_speed = speed
+    
+    while True:
+        motor_speeds = f"{speed_left}{speed_right}\n" 
+        microbit.write(motor_speeds.encode("utf-8"))
+        data = microbit.readline().decode('utf-8').rstrip()
+        if len(data)==3:
+            clean = data
+        print(clean)
+        print(motor_speeds)
+
+def left():
+    pass
+
+def right():
+    pass
+
+def motor_controller(speed,direction):
+    global current
+    if current != "none":
+        os.kill(current, signal.SIGTERM)
+    if direction == "straight":
+        motorp = mp.Process(target = straight, args=(speed,))
+    elif direction == "right":
+        motorp = mp.Process(target = right, args=(speed,))
+    elif direction == "left":
+        motorp = mp.Process(target = left, args=(speed,))
+    motorp.start()
+    current = motorp.pid
+    print(current)
+
