@@ -5,7 +5,7 @@ microbit = serial.Serial("COM5",115200,timeout = 0.001)
 x=0
 clean = 0
 while x<1000:
-    microbit.write(b'000000\n')
+    microbit.write(b'mv-50-50\n')
     data = microbit.readline().decode('utf-8').rstrip()
     if len(data)==3:
         clean = data

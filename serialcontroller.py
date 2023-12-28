@@ -13,37 +13,37 @@ def straight(speed):
     global clean
     compass_vals = []
 
-    microbit = serial.Serial("COM5",115200,timeout = 0.001)
+    microbit = serial.Serial("COM5",115200,timeout = 0.1)
     x = 0
 
     ##Gets four compass readings and avergaes for accurate initial
     ##direction
     
-    while x < 15:
-        microbit.write(b"000000\n")
+    
+    init_direction = "null"
+
+    while len(init_direction) != 3:
+        microbit.write(b"mv000000\n")
         data = microbit.readline().decode('utf-8').rstrip()
-        print(data)
         if len(data)==3:
             clean = data
-            print(clean)
-            compass_vals.append(int(clean))
-        x=x+1
-        
-    init_direction = sum(compass_vals)/len(compass_vals)
+        print(clean)
+        init_direction = str(clean)
+
+    init_direction = clean
     print(init_direction)
+
 
     speed_left = speed
     speed_right = speed
     base_speed = speed
     
     while True:
-        motor_speeds = f"{speed_left}{speed_right}\n" 
+        motor_speeds = f"mv{speed_left}{speed_right}\n" 
         microbit.write(motor_speeds.encode("utf-8"))
         data = microbit.readline().decode('utf-8').rstrip()
         if len(data)==3:
             clean = data
-        print(clean)
-        print(motor_speeds)
 
 def left():
     pass
