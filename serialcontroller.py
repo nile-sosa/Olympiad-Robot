@@ -20,18 +20,16 @@ def straight(speed):
     ##direction
     
     
-    init_direction = "null"
-
-    while len(init_direction) != 3:
+    while x < 5:
         microbit.write(b"mv000000\n")
         data = microbit.readline().decode('utf-8').rstrip()
         if len(data)==3:
             clean = data
-        print(clean)
-        init_direction = str(clean)
+            compass_vals.append(int(clean))
+        x=x+1
+        
+    init_direction = sum(compass_vals)/len(compass_vals)
 
-    init_direction = clean
-    print(init_direction)
 
 
     speed_left = speed
