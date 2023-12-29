@@ -1,7 +1,7 @@
 import serial
 import threading as th
 
-previous_run = 0
+
 clean = 0
 current_thread = None
 stop_event = th.Event()
@@ -39,6 +39,7 @@ def straight(speed):
             data = microbit.readline().decode('utf-8').rstrip()
             if len(data)==3:
                 clean = data
+            print(clean)
     except KeyboardInterrupt as a:
         pass
 
