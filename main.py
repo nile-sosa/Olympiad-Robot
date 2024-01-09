@@ -8,6 +8,8 @@ import time
 ##since daemon threading is used, time wait must be used to keep motor program running
 if __name__ == "__main__":
     while True:
+        motor_controller("050","straight")
+        time.sleep(4)
         motor_controller("000","straight")
-        time.sleep(2)
+        time.sleep(4)
     

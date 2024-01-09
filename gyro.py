@@ -3,8 +3,7 @@
 	http://www.electronicwings.com
 '''
 import smbus					#import SMBus module of I2C
-from time import sleep          #import
-
+from time import sleep
 #some MPU6050 Registers and their Address
 PWR_MGMT_1   = 0x6B
 SMPLRT_DIV   = 0x19
@@ -59,10 +58,9 @@ MPU_Init()
 
 print (" Reading Data of Gyroscope and Accelerometer")
 
-absolute_x = 0
 
-def gyro_reader(bearing):
-	global absolute_x
+
+def gyro_reader(absolute_z):
 	
 	while True:
 		
@@ -94,7 +92,6 @@ def gyro_reader(bearing):
 
 		##print ("Gx=%.2f" %Gx, u'\u00b0'+ "/s", "\tGy=%.2f" %Gy, u'\u00b0'+ "/s", "\tGz=%.2f" %Gz, u'\u00b0'+ "/s", "\tAx=%.2f g" %Ax, "\tAy=%.2f g" %Ay, "\tAz=%.2f g" %Az) 	
 		sleep(0.01)
-		if abs(Gx)>0.05:
-			absolute_x = absolute_x + Gx/5
-		
-		bearing[0] = absolute_x
+		if abs(Gz)>0.05:
+			absolute_z.value += Gz/5
+	

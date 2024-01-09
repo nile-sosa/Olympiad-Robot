@@ -1,15 +1,17 @@
 import serial
 import threading as th
 from gyro import gyro_reader
+import time
+from multiprocessing import Process, Value, Manager
 
-gyro_thread = None
+gyro_process = None
 current_thread = None
 stop_event = th.Event()
-bearing = [0]
 
+manager = Manager()
+absolute_z = manager.Value('d', 0.0)
 
 def straight(speed):
-    global bearing
 
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0.1)
 
@@ -24,11 +26,13 @@ def straight(speed):
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
             print(data)
-            print(bearing)
+            print(absolute_z.value)
     except KeyboardInterrupt as a:
+        microbit.close()
         pass
 
     microbit.close()
+    
 
 def left():
     pass
@@ -39,10 +43,10 @@ def right():
 def motor_controller(speed,direction):
     global bearing
     global current_thread
-    global gyro_thread
+    global gyro_process
     
-    gyro_thread = th.Thread(target = gyro_reader, args=(bearing,))
-    gyro_thread.start()
+    gyro_process = Process(target = gyro_reader, args=(absolute_z,))
+    gyro_process.start()
     if current_thread and current_thread.is_alive():
         stop_event.set()
         current_thread.join()
