@@ -26,7 +26,8 @@ def straight(speed):
         while not stop_event.is_set():
             enc1_val = enc1.read()
             enc2_val = enc2.read()
-            if ((speed_left==0) or (speed_right==0)):
+            print(speed_left)
+            if ((speed_left==0)):
                 print("stopped")
                 speed_left = "00"
                 speed_right = "00"
@@ -37,8 +38,8 @@ def straight(speed):
             motor_speeds = f"mv0{speed_left}0{speed_right}\n" 
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
-            print(motor_speeds)
-            print(str(enc1_val)+","+str(enc2_val))
+            ##print(motor_speeds)
+            ##print(str(enc1_val)+","+str(enc2_val))
     except KeyboardInterrupt as a:
         microbit.close()
         pass
