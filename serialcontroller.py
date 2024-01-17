@@ -15,37 +15,37 @@ absolute_z = manager.Value('d', 0.0)
 
 def straight(speed):
 
-    microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0.1)
-
-
-    speed_left = int(speed)
-    speed_right = int(speed)
+    microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
     base_speed = speed
-    
     try:
         while not stop_event.is_set():
+            speed_left = int(speed)
+            speed_right = int(speed)
             enc1_val = enc1.read()
             enc2_val = enc2.read()
-            print(speed_left)
-            if ((speed_left==0) or (speed_left=="00")) and ((speed_right==0) or (speed_right=="00")):
+            ##print(speed_left)
+            if (speed_left==0) and (speed_right==0):
                 print("stopped")
-                speed_left = "00"
-                speed_right = "00"
-            elif enc1_val > enc2_val:
-                speed_left = int(speed) + 10
-            elif enc2_val > enc1_val:
-                speed_right = int(speed) + 10
-            motor_speeds = f"mv0{speed_left}0{speed_right}\n" 
+                motor_speeds = f"mv000000\n"
+            elif enc1_val < enc2_val:
+                speed_left = int(speed) + 20
+                motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
+                print("left behind")
+            elif enc2_val < enc1_val:
+                speed_right = int(speed) + 30
+                motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
+                print("right behind")
+            else:
+                motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
-            ##print(motor_speeds)
-            ##print(str(enc1_val)+","+str(enc2_val))
+            print(motor_speeds)
+            print(str(enc1_val)+","+str(enc2_val))
     except KeyboardInterrupt as a:
         microbit.close()
         pass
 
     microbit.close()
-    
 
 def left():
     pass
@@ -57,7 +57,6 @@ def motor_controller(speed,direction):
     global bearing
     global current_thread
     global gyro_process
-    
     ##gyro_process = Process(target = gyro_reader, args=(absolute_z,))
     ##gyro_process.start()
     if current_thread and current_thread.is_alive():
