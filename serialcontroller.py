@@ -1,6 +1,5 @@
 import serial
 import threading as th
-from gyro import gyro_reader
 import time
 from multiprocessing import Process, Value, Manager
 import Encoder
@@ -12,6 +11,7 @@ current_thread = None
 stop_event = th.Event()
 manager = Manager()
 absolute_z = manager.Value('d', 0.0)
+
 
 def straight(speed):
 
@@ -27,7 +27,7 @@ def straight(speed):
             enc1_val = enc1.read()
             enc2_val = enc2.read()
             print(speed_left)
-            if ((speed_left==0)):
+            if ((speed_left==0) or (speed_left=="00")) and ((speed_right==0) or (speed_right=="00")):
                 print("stopped")
                 speed_left = "00"
                 speed_right = "00"
