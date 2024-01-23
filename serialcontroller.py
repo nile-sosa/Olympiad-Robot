@@ -2,10 +2,8 @@ import serial
 import threading as th
 import time
 from multiprocessing import Process, Value, Manager
-import Encoder
 
-enc1 = Encoder.Encoder(17,27)
-enc2 = Encoder.Encoder(23,24)
+
 gyro_process = None
 current_thread = None
 stop_event = th.Event()
@@ -21,8 +19,8 @@ def straight(speed):
         while not stop_event.is_set():
             speed_left = int(speed)
             speed_right = int(speed)
-            enc1_val = enc1.read()
-            enc2_val = enc2.read()
+            enc1_val = 0
+            enc2_val = 0
             ##print(speed_left)
             if (speed_left==0) and (speed_right==0):
                 print("stopped")
