@@ -8,16 +8,18 @@ left_motor = pin15
 reverse_left = pin16
 
 while True:
-    sleep(10)
+    sleep(20)
     if uart.any():
         serial_input = uart.readline()
         if serial_input is not None:
             input2 = serial_input.decode('utf-8')# Decode the bytes to string
+            input2 = input2.strip()
             left = input2[2:5]  # Use slicing instead of substr
             right = input2[5:8]  # Use slicing instead of substr
-            print('recieved')
-            print(input2)
+            print(left)
             print(right)
+            print(input2)
+    
             if len(input2) == 8 and input2[:1] == "mv":
                 if left[0] == "-":
                     left_motor.write_analog(int(left[1:]))
