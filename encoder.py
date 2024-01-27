@@ -3,7 +3,7 @@ import time
 import re
 
 # Set the COM port and baud rate according to your Arduino setup
-ser = serial.Serial('/dev/ttyACM0', 9600)  # Change 'COM3' to your actual port
+ser = serial.Serial('/dev/ttyACM1', 9600)  # Change 'COM3' to your actual port
 
 try:
     while True:
