@@ -2,21 +2,24 @@ import serial
 import threading as th
 import time
 from multiprocessing import Process, Value, Manager
+from encoder import encoder 
 
-
-gyro_process = None
+encoder_process = None
 current_thread = None
 stop_event = th.Event()
 manager = Manager()
-absolute_z = manager.Value('d', 0.0)
-
+encoder_values = manager.list([0,0])
 
 def straight(speed):
+    global encoder_values
+    global encoder_process
 
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
     base_speed = speed
     try:
         while not stop_event.is_set():
+            time.sleep(0.05)
+            print(encoder_process.is_alive())
             speed_left = int(speed)
             speed_right = int(speed)
             enc1_val = 0
@@ -26,7 +29,7 @@ def straight(speed):
                 print("stopped")
                 motor_speeds = f"mv000000\n"
             elif enc1_val < enc2_val:
-                speed_left = int(speed) + 20
+                speed_left = int(speed) + 30
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
                 print("left behind")
             elif enc2_val < enc1_val:
@@ -37,8 +40,8 @@ def straight(speed):
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
-            print(motor_speeds)
-            print(str(enc1_val)+","+str(enc2_val))
+            print(encoder_values)
+            print("working")
     except KeyboardInterrupt as a:
         microbit.close()
         pass
@@ -54,9 +57,11 @@ def right():
 def motor_controller(speed,direction):
     global bearing
     global current_thread
-    global gyro_process
-    ##gyro_process = Process(target = gyro_reader, args=(absolute_z,))
-    ##gyro_process.start()
+    global encoder_process
+    if not encoder_process.is_alive():
+        encoder_process = Process(target = encoder, args=(encoder_values,))
+        encoder_process.start()
+        time.sleep(2)
     if current_thread and current_thread.is_alive():
         stop_event.set()
         current_thread.join()

@@ -1,6 +1,6 @@
 import serial
 import time
-microbit = serial.Serial("/dev/ttyACM1",115200,timeout = 0.001)
+microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0.001)
  
 while True:
     x=0
