@@ -1,12 +1,13 @@
 import serial
 import time
-microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0.001)
+microbit = serial.Serial("/dev/ttyACM1",115200,timeout = 0.001)
  
 while True:
     x=0
     clean = 0
-    while x<250:
-        microbit.write(b'mv030030\n')
+    while x<10:
+        time.sleep(0.05)
+        microbit.write(b'mv060060\n')
         data = microbit.readline().decode('utf-8').rstrip()
 
         print(data)
@@ -14,7 +15,8 @@ while True:
 
     x=0
     clean = 0
-    while x<1000:
+    while x<20:
+        time.sleep(0.05)
         microbit.write(b'mv000000\n')
         data = microbit.readline().decode('utf-8').rstrip()
 
