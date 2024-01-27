@@ -4,6 +4,7 @@ import time
 from multiprocessing import Process, Value, Manager
 from encoder import encoder 
 
+process_called = False
 encoder_process = None
 current_thread = None
 stop_event = th.Event()
@@ -56,10 +57,13 @@ def right():
 
 def motor_controller(speed,direction):
     global bearing
+    global process_called
     global current_thread
     global encoder_process
-    if not encoder_process.is_alive():
+    if not process_called:
         encoder_process = Process(target = encoder, args=(encoder_values,))
+        process_called = True
+    if not encoder_process.is_alive():
         encoder_process.start()
         time.sleep(2)
     if current_thread and current_thread.is_alive():
