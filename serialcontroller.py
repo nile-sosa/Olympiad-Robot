@@ -30,11 +30,11 @@ def straight(speed):
                 print("stopped")
                 motor_speeds = f"mv-00-00\n"
             elif enc1_val < enc2_val:
-                speed_left = int(speed) + 40
+                speed_left = int(speed) + 5
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
                 print("left behind")
             elif enc2_val < enc1_val:
-                speed_right = int(speed) + 40
+                speed_right = int(speed) + 5
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
                 print("right behind")
             else:
