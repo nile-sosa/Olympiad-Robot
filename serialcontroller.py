@@ -6,10 +6,12 @@ from encoder import encoder
 
 process_called = False
 encoder_process = None
+incrementor_thread = None
 current_thread = None
 stop_event = th.Event()
 manager = Manager()
 encoder_values = manager.list([0,0])
+incrementor_list = [0]
 
 def straight(speed):
     global encoder_values
@@ -41,10 +43,11 @@ def straight(speed):
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
-            print("enc1:" + str(enc1_val))
-            print("enc2:" + str(enc2_val))
-            print(encoder_values)
-            print(motor_speeds)
+            #print("enc1:" + str(enc1_val))
+            #print("enc2:" + str(enc2_val))
+            #print(encoder_values)
+            #print(motor_speeds)
+            print(incrementor_list)
     except KeyboardInterrupt as a:
         microbit.close()
         pass
@@ -62,6 +65,8 @@ def motor_controller(speed,direction):
     global process_called
     global current_thread
     global encoder_process
+    global incrementor_thread
+    global incrementor_list
     if not process_called:
         encoder_process = Process(target = encoder, args=(encoder_values,))
         process_called = True
@@ -77,7 +82,16 @@ def motor_controller(speed,direction):
     if direction == "straight":
         motorp = th.Thread(target = straight, args=(speed,))
         current_thread = motorp
-
-##Setting daemon to true allows thread to end when main process finishes
+    incrementor_list[0] = 0
+    incrementor_thread = th.Thread(target = incrementor, args=(incrementor_list,))
+    incrementor_thread.daemon = True
+    incrementor_thread.start()
     current_thread.daemon = True
     current_thread.start()
+
+def incrementor(incrementation_value):
+    while not stop_event.is_set():
+        time.sleep(0.015)
+        incrementation_value[0] = incrementation_value[0] + 1
+    print("incrementation stopped")
+##Setting daemon to true allows thread to end when main process finishes
