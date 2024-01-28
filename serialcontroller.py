@@ -25,20 +25,19 @@ right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 def straight(distance):
     global encoder_values
     global encoder_process
-    encoder_values[0] = 0
-    encoder_values[1] = 0
-    print("init" + str(incrementor_list))
+    init_left = encoder_values[0]
+    init_right = encoder_values[1]
     print("starting motors forward")
     i = 0
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
     try:
-        while encoder_values[0]<distance:
+        while encoder_values[0]-init_left < distance:
             time.sleep(0.05)
             left_pid_motor.setpoint = incrementor_list[0]
             right_pid_motor.setpoint = incrementor_list[0]
-
-            left_enc_val = encoder_values[0]
-            right_enc_val = encoder_values[1]
+            left_enc_val = encoder_values[0] - init_left
+            right_enc_val = encoder_values[1] - init_right
+            print("loop vals" + str(left_enc_val))
 
             left_pid_output = left_pid_motor(left_enc_val)/10
             right_pid_output = right_pid_motor(right_enc_val)/10
