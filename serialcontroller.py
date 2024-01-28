@@ -1,8 +1,10 @@
 import serial
 import threading as th
 import time
+
 from multiprocessing import Process, Value, Manager
 from encoder import encoder 
+from simple_pid import PID
 
 process_called = False
 encoder_process = None
@@ -13,34 +15,35 @@ manager = Manager()
 encoder_values = manager.list([0,0])
 incrementor_list = [0]
 
-def straight(speed):
+kp = 2.0
+ki = 0.1
+kd = 0.01
+
+left_pid_motor = PID(kp,ki,kd,setpoint = 0)
+right_pid_motor = PID(kp,ki,kd,setpoint = 0)
+
+def straight(distance):
     global encoder_values
     global encoder_process
 
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
-    base_speed = speed
     try:
-        while not stop_event.is_set():
+        while not stop_event.is_set() and (incrementor_list[0]<distance):
             time.sleep(0.05)
-            print(encoder_process.is_alive())
-            speed_left = int(speed)
-            speed_right = int(speed)
-            enc1_val = encoder_values[0]
-            enc2_val = encoder_values[1]
-            ##print(speed_left)
-            if (speed_left==0) and (speed_right==0):
-                print("stopped")
-                motor_speeds = f"mv-00-00\n"
-            elif enc1_val < enc2_val:
-                speed_left = int(speed) + 5
-                motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
-                print("left behind")
-            elif enc2_val < enc1_val:
-                speed_right = int(speed) + 5
-                motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
-                print("right behind")
-            else:
-                motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
+            left_pid_motor.setpoint = incrementor_list[0]
+            right_pid_motor.setpoint = incrementor_list[0]
+
+            left_enc_val = encoder_values[0]
+            right_enc_val = encoder_values[0]
+
+            left_pid_output = left_pid_motor(left_enc_val)/10
+            right_pid_output = right_pid_motor(right_enc_val)/10
+            print(left_pid_output)
+            print(right_pid_output)
+            speed_left = int(left_pid_output)
+            speed_right = int(right_pid_output)
+
+            motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
             #print("enc1:" + str(enc1_val))
@@ -48,6 +51,12 @@ def straight(speed):
             #print(encoder_values)
             #print(motor_speeds)
             print(incrementor_list)
+        while i<10:
+            motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
+            microbit.write(motor_speeds.encode("utf-8"))
+            data = microbit.readline().decode('utf-8').rstrip()
+            print("stopping")
+            i=i+1
     except KeyboardInterrupt as a:
         microbit.close()
         pass
@@ -60,7 +69,7 @@ def left():
 def right():
     pass
 
-def motor_controller(speed,direction):
+def motor_controller(speed,direction,distance):
     global bearing
     global process_called
     global current_thread
@@ -80,13 +89,12 @@ def motor_controller(speed,direction):
     stop_event.clear()
 
     if direction == "straight":
-        motorp = th.Thread(target = straight, args=(speed,))
+        motorp = th.Thread(target = straight, args=(distance,))
         current_thread = motorp
     incrementor_list[0] = 0
     incrementor_thread = th.Thread(target = incrementor, args=(incrementor_list,))
     incrementor_thread.daemon = True
     incrementor_thread.start()
-    current_thread.daemon = True
     current_thread.start()
 
 def incrementor(incrementation_value):

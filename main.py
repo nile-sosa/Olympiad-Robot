@@ -6,8 +6,5 @@ import sys
 
 ##since daemon threading is used, time wait must be used to keep motor program running
 if __name__ == "__main__":
-    motor_controller("000","straight")
+    motor_controller(None,"straight",500)
     time.sleep(6)
-    motor_controller("000","straight")
-    time.sleep(2)
-    sys.exit()
