@@ -2,10 +2,10 @@ from microbit import *
 
 uart.init(baudrate=115200)
 
-right_motor = pin13
-reverse_right = pin14
-left_motor = pin15
-reverse_left = pin16
+right_motor = pin15
+reverse_right = pin16
+left_motor = pin13
+reverse_left = pin14
 
 while True:
     sleep(20)
@@ -18,19 +18,20 @@ while True:
             right = input2[5:8]  # Use slicing instead of substr
             print(left)
             print(right)
-            print(input2)
     
-            if len(input2) == 8 and input2[:1] == "mv":
+            if len(input2) == 8 and input2[:2] == "mv":
                 if left[0] == "-":
-                    left_motor.write_analog(int(left[1:]))
-                    reverse_left.write_digital(1)
-                else:
-                    left_motor.write_analog(int(left))
+                    print("reverse")
+                    left_motor.write_analog(abs(int(left))*10)
                     reverse_left.write_digital(0)  # Correct the pin to reverse_left
-                if right[0] == "-":
-                    right_motor.write_analog(int(right[1:]))
-                    reverse_right.write_digital(1)  # Correct the pin to reverse_right
                 else:
-                    right_motor.write_analog(int(right))
+                    print("forward")
+                    left_motor.write_analog((100-int(left[1:]))*10)
+                    reverse_left.write_digital(1)
+                if right[0] == "-":
+                    right_motor.write_analog(abs(int(right))*10)
                     reverse_right.write_digital(0)
+                else:
+                    right_motor.write_analog((100-int(right[1:]))*10)
+                    reverse_right.write_digital(1)  # Correct the pin to reverse_right
 
