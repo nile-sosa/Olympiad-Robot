@@ -23,26 +23,28 @@ def straight(speed):
             print(encoder_process.is_alive())
             speed_left = int(speed)
             speed_right = int(speed)
-            enc1_val = 0
-            enc2_val = 0
+            enc1_val = encoder_values[0]
+            enc2_val = encoder_values[1]
             ##print(speed_left)
             if (speed_left==0) and (speed_right==0):
                 print("stopped")
-                motor_speeds = f"mv000000\n"
+                motor_speeds = f"mv-00-00\n"
             elif enc1_val < enc2_val:
-                speed_left = int(speed) + 30
+                speed_left = int(speed) + 40
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
                 print("left behind")
             elif enc2_val < enc1_val:
-                speed_right = int(speed) + 30
+                speed_right = int(speed) + 40
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
                 print("right behind")
             else:
                 motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
+            print("enc1:" + str(enc1_val))
+            print("enc2:" + str(enc2_val))
             print(encoder_values)
-            print("working")
+            print(motor_speeds)
     except KeyboardInterrupt as a:
         microbit.close()
         pass
