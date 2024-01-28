@@ -15,9 +15,9 @@ manager = Manager()
 encoder_values = manager.list([0,0])
 incrementor_list = [0]
 
-kp = 2.0
-ki = 0.1
-kd = 0.01
+kp = 4.0
+ki = 2
+kd = 1
 
 left_pid_motor = PID(kp,ki,kd,setpoint = 0)
 right_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -25,7 +25,7 @@ right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 def straight(distance):
     global encoder_values
     global encoder_process
-
+    i = 0
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
     try:
         while not stop_event.is_set() and (incrementor_list[0]<distance):
@@ -34,7 +34,7 @@ def straight(distance):
             right_pid_motor.setpoint = incrementor_list[0]
 
             left_enc_val = encoder_values[0]
-            right_enc_val = encoder_values[0]
+            right_enc_val = encoder_values[1]
 
             left_pid_output = left_pid_motor(left_enc_val)/10
             right_pid_output = right_pid_motor(right_enc_val)/10
@@ -46,13 +46,11 @@ def straight(distance):
             motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
-            #print("enc1:" + str(enc1_val))
-            #print("enc2:" + str(enc2_val))
-            #print(encoder_values)
+            print(encoder_values)
             #print(motor_speeds)
             print(incrementor_list)
         while i<10:
-            motor_speeds = f"mv0{speed_left}0{speed_right}\n"   
+            motor_speeds = f"mv-00-00\n"   
             microbit.write(motor_speeds.encode("utf-8"))
             data = microbit.readline().decode('utf-8').rstrip()
             print("stopping")
@@ -99,7 +97,7 @@ def motor_controller(speed,direction,distance):
 
 def incrementor(incrementation_value):
     while not stop_event.is_set():
-        time.sleep(0.015)
+        time.sleep(0.01)
         incrementation_value[0] = incrementation_value[0] + 1
     print("incrementation stopped")
 ##Setting daemon to true allows thread to end when main process finishes
