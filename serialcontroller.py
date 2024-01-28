@@ -16,7 +16,7 @@ encoder_values = manager.list([0,0])
 incrementor_list = [0]
 
 kp = 4.0
-ki = 2
+ki = 2.3
 kd = 1
 
 left_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -25,10 +25,14 @@ right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 def straight(distance):
     global encoder_values
     global encoder_process
+    encoder_values[0] = 0
+    encoder_values[1] = 0
+    print("init" + str(incrementor_list))
+    print("starting motors forward")
     i = 0
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
     try:
-        while not stop_event.is_set() and (incrementor_list[0]<distance):
+        while encoder_values[0]<distance:
             time.sleep(0.05)
             left_pid_motor.setpoint = incrementor_list[0]
             right_pid_motor.setpoint = incrementor_list[0]
@@ -90,13 +94,13 @@ def motor_controller(speed,direction,distance):
         motorp = th.Thread(target = straight, args=(distance,))
         current_thread = motorp
     incrementor_list[0] = 0
-    incrementor_thread = th.Thread(target = incrementor, args=(incrementor_list,))
+    incrementor_thread = th.Thread(target = incrementor, args=(incrementor_list,distance))
     incrementor_thread.daemon = True
     incrementor_thread.start()
     current_thread.start()
 
-def incrementor(incrementation_value):
-    while not stop_event.is_set():
+def incrementor(incrementation_value,distance):
+    while incrementation_value[0]<distance:
         time.sleep(0.01)
         incrementation_value[0] = incrementation_value[0] + 1
     print("incrementation stopped")
