@@ -15,15 +15,15 @@ manager = Manager()
 encoder_values = manager.list([0,0])
 incrementor_list = [0]
 
-kp = 4.0
-ki = 1
-kd = 1.3
 
-left_pid_motor = PID(kp,ki,kd,setpoint = 0)
-right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
 def straight(distance):
     global encoder_values
+    kp = 4.0
+    ki = 2
+    kd = 1
+    left_pid_motor = PID(kp,ki,kd,setpoint = 0)
+    right_pid_motor = PID(kp,ki,kd,setpoint = 0)
     init_left = encoder_values[0]
     init_right = encoder_values[1]
     left_pid_motor.output_limits=(-900,900)
@@ -62,22 +62,28 @@ def straight(distance):
         microbit.close()
         pass
 
-    microbit.close()
+    microbit.close() 
 
 def left():
     global encoder_values
+    kp = 4.5
+    ki = 3
+    kd = 1.5
+    left_pid_motor = PID(kp,ki,kd,setpoint = 0)
+    right_pid_motor = PID(kp,ki,kd,setpoint = 0)
+
     init_left = encoder_values[0]
     init_right = encoder_values[1]
     print("turning left")
     i=0
-    turn = 143
+    turn = 147
     right_pid_motor.setpoint = -turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = turn
     left_pid_motor.output_limits = (-650,650)
     microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0)
     try:
-        while encoder_values[1]-init_right>=-turn or encoder_values[0]-init_left<=turn:
+        while encoder_values[1]-init_right>-turn or encoder_values[0]-init_left<turn:
             time.sleep(0.05)
             left_enc_val = encoder_values[0] - init_left
             right_enc_val = encoder_values[1] - init_right
