@@ -20,7 +20,7 @@ desired_encoder_position = [0,0]
 def forward(distance):
     global encoder_values
     kp = 6.5
-    ki = 2.5
+    ki = 1.8
     kd = 1.3
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -69,11 +69,11 @@ def forward(distance):
 
 def reverse(distance):
     global encoder_values
-    kp = 3
-    ki = 1.5
-    kd = 1
+    kp = 3.0
+    ki = 1.9
+    kd = 1.5
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
-    right_pid_motor = PID(6,1.9,kd,setpoint = 0)
+    right_pid_motor = PID(kp,ki,kd,setpoint = 0)
     init_left = encoder_values[0]
     init_right = encoder_values[1]
     left_pid_motor.output_limits=(-900,900)
@@ -89,7 +89,7 @@ def reverse(distance):
             left_enc_val = encoder_values[0] - init_left
             right_enc_val = encoder_values[1] - init_right
 
-            left_pid_output = left_pid_motor(left_enc_val)/10
+            left_pid_output = (left_pid_motor(left_enc_val)/10)*0.85
             right_pid_output = right_pid_motor(right_enc_val)/10
             print(left_pid_output)
             print(right_pid_output)
@@ -115,9 +115,9 @@ def reverse(distance):
 def right():  
 
     global encoder_values
-    kp = 4
-    ki = 3
-    kd = 1
+    kp = 2
+    ki = 1.7
+    kd = 1.1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
@@ -125,7 +125,7 @@ def right():
     init_right = encoder_values[1]
     print("turning right")
     i=0
-    turn = 153
+    turn = 145
     right_pid_motor.setpoint = -turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = turn
@@ -162,11 +162,12 @@ def right():
         microbit.close()
         pass
 
+
 def left():
     global encoder_values
-    kp = 4
-    ki = 3
-    kd = 1
+    kp = 2
+    ki = 1.7
+    kd = 1.1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
@@ -174,8 +175,7 @@ def left():
     init_right = encoder_values[1]
     print("turning left")
     i=0 
-    turn = 152
-    
+    turn = 145
     right_pid_motor.setpoint = turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = -turn
@@ -268,7 +268,7 @@ def incrementor(incrementation_value,distance):
 
 def reverse_incrementor(incrementation_value,distance):
     while incrementation_value[0]>distance:
-        time.sleep(0.015)
+        time.sleep(0.01)
         incrementation_value[0] = incrementation_value[0] - 1
     print("reverse incrementation stopped")
 
