@@ -1,7 +1,13 @@
 import serial
 import time
 microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0.001)
- 
+
+
+while True:
+    data = microbit.readline().decode('utf-8').rstrip()
+    if data == "start":
+        break
+    print(data)
 while True:
     print("dasfdsafseafsefadaef")
     x=10

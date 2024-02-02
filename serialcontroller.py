@@ -20,7 +20,7 @@ desired_encoder_position = [0,0]
 def forward(distance):
     global encoder_values
     kp = 6.5
-    ki = 1.8
+    ki = 2.5
     kd = 1.3
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -69,11 +69,11 @@ def forward(distance):
 
 def reverse(distance):
     global encoder_values
-    kp = 4.0
-    ki = 1.4
-    kd = 1.5
+    kp = 3
+    ki = 1.5
+    kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
-    right_pid_motor = PID(kp,ki,kd,setpoint = 0)
+    right_pid_motor = PID(6,1.9,kd,setpoint = 0)
     init_left = encoder_values[0]
     init_right = encoder_values[1]
     left_pid_motor.output_limits=(-900,900)
@@ -115,9 +115,9 @@ def reverse(distance):
 def right():  
 
     global encoder_values
-    kp = 2
-    ki = 1.7
-    kd = 1.1
+    kp = 4
+    ki = 3
+    kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
@@ -125,7 +125,7 @@ def right():
     init_right = encoder_values[1]
     print("turning right")
     i=0
-    turn = 145
+    turn = 153
     right_pid_motor.setpoint = -turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = turn
@@ -162,12 +162,11 @@ def right():
         microbit.close()
         pass
 
-
 def left():
     global encoder_values
-    kp = 2
-    ki = 1.7
-    kd = 1.1
+    kp = 4
+    ki = 3
+    kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
@@ -175,7 +174,8 @@ def left():
     init_right = encoder_values[1]
     print("turning left")
     i=0 
-    turn = 145
+    turn = 152
+    
     right_pid_motor.setpoint = turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = -turn
@@ -268,7 +268,7 @@ def incrementor(incrementation_value,distance):
 
 def reverse_incrementor(incrementation_value,distance):
     while incrementation_value[0]>distance:
-        time.sleep(0.01)
+        time.sleep(0.015)
         incrementation_value[0] = incrementation_value[0] - 1
     print("reverse incrementation stopped")
 

@@ -1,10 +1,15 @@
-from serialcontroller import motor_controller
+from serialcontroller import motor_controller as mc
 import time
 import sys
+import serial
 
-##Use a string for motor values, not an int
+microbit = serial.Serial("/dev/ttyACM0",115200,timeout = 0.001)
 
-##since daemon threading is used, time wait must be used to keep motor program running
+while True:
+    data = microbit.readline().decode('utf-8').rstrip()
+    if data == "start":
+        break
+    print(data)
+
 if __name__ == "__main__":
-    motor_controller(None,"left",300)
-
+    mc(None,"forward",350)
