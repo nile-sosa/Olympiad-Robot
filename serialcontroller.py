@@ -17,7 +17,7 @@ incrementor_list = [0]
 desired_encoder_position = [0,0]
 
 
-def straight(distance):
+def forward(distance):
     global encoder_values
     kp = 6.5
     ki = 1.8
@@ -112,21 +112,20 @@ def reverse(distance):
         pass
     microbit.close()
 
-
-def left():
+def right():  
 
     global encoder_values
-    kp = 4.5
-    ki = 3
-    kd = 1.5
+    kp = 2
+    ki = 1.7
+    kd = 1.1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
     init_left = encoder_values[0]
     init_right = encoder_values[1]
-    print("turning left")
+    print("turning right")
     i=0
-    turn = 148
+    turn = 145
     right_pid_motor.setpoint = -turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = turn
@@ -164,19 +163,19 @@ def left():
         pass
 
 
-def right():
+def left():
     global encoder_values
-    kp = 4.5 
-    ki = 3 
-    kd = 1.5 
+    kp = 2
+    ki = 1.7
+    kd = 1.1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
     init_left = encoder_values[0]
     init_right = encoder_values[1]
-    print("turning right")
+    print("turning left")
     i=0 
-    turn = 150
+    turn = 145
     right_pid_motor.setpoint = turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = -turn
@@ -230,10 +229,13 @@ def motor_controller(speed,direction,distance):
     if current_thread and current_thread.is_alive():
         stop_event.set()
         current_thread.join()
+        print("should be dead")
+        if not current_thread.is_alive():
+            print("aaaand it is")
     stop_event.clear()
 
-    if direction == "straight":
-        motorp = th.Thread(target = straight, args=(distance,))
+    if direction == "forward":
+        motorp = th.Thread(target = forward, args=(distance,))
         current_thread = motorp
         incrementor_list[0] = 0
         incrementor_thread = th.Thread(target = incrementor, args=(incrementor_list,distance))
@@ -254,7 +256,8 @@ def motor_controller(speed,direction,distance):
         motorp = th.Thread(target = right, args=())
         current_thread = motorp
     current_thread.start()
-    incrementor_thread.join()
+    if incrementor_thread and incrementor_thread.is_alive():
+        incrementor_thread.join()
 
 
 def incrementor(incrementation_value,distance):
