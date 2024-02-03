@@ -89,7 +89,7 @@ def reverse(distance):
             left_enc_val = encoder_values[0] - init_left
             right_enc_val = encoder_values[1] - init_right
 
-            left_pid_output = (left_pid_motor(left_enc_val)/10)*0.85
+            left_pid_output = (left_pid_motor(left_enc_val)/10)*0.8
             right_pid_output = right_pid_motor(right_enc_val)/10
             print(left_pid_output)
             print(right_pid_output)
@@ -115,9 +115,9 @@ def reverse(distance):
 def right():  
 
     global encoder_values
-    kp = 2
-    ki = 1.7
-    kd = 1.1
+    kp = 4
+    ki = 3
+    kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
@@ -125,7 +125,7 @@ def right():
     init_right = encoder_values[1]
     print("turning right")
     i=0
-    turn = 145
+    turn = 147
     right_pid_motor.setpoint = -turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = turn
@@ -165,9 +165,9 @@ def right():
 
 def left():
     global encoder_values
-    kp = 2
-    ki = 1.7
-    kd = 1.1
+    kp = 4
+    ki = 3
+    kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
 
@@ -175,7 +175,7 @@ def left():
     init_right = encoder_values[1]
     print("turning left")
     i=0 
-    turn = 145
+    turn = 148
     right_pid_motor.setpoint = turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = -turn
