@@ -19,7 +19,7 @@ desired_encoder_position = [0,0]
 
 def forward(distance):
     global encoder_values
-    kp = 6.5
+    kp = 4.5
     ki = 1.8
     kd = 1.3
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -116,7 +116,7 @@ def right():
 
     global encoder_values
     kp = 4
-    ki = 3
+    ki = 3.3
     kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -125,7 +125,7 @@ def right():
     init_right = encoder_values[1]
     print("turning right")
     i=0
-    turn = 147
+    turn = 148
     right_pid_motor.setpoint = -turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = turn
@@ -166,7 +166,7 @@ def right():
 def left():
     global encoder_values
     kp = 4
-    ki = 3
+    ki = 3.3
     kd = 1
     left_pid_motor = PID(kp,ki,kd,setpoint = 0)
     right_pid_motor = PID(kp,ki,kd,setpoint = 0)
@@ -175,7 +175,7 @@ def left():
     init_right = encoder_values[1]
     print("turning left")
     i=0 
-    turn = 148
+    turn = 141
     right_pid_motor.setpoint = turn
     right_pid_motor.output_limits = (-650,650)
     left_pid_motor.setpoint = -turn
@@ -262,7 +262,7 @@ def motor_controller(speed,direction,distance):
 
 def incrementor(incrementation_value,distance):
     while incrementation_value[0]<distance:
-        time.sleep(0.015)
+        time.sleep(0.0075)
         incrementation_value[0] = incrementation_value[0] + 1
     print("incrementation stopped")
 

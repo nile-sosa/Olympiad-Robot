@@ -9,19 +9,19 @@ while True:
     data = microbit.readline().decode('utf-8').rstrip()
     print(data)
     if data == "start":
+        time.sleep(2.5)
         break
-    time.sleep(2.5)
     print(data)
 
 if __name__ == "__main__":
-    mc(None,"forward",350)
+    mc(None,"forward",348)
+    mc(None,"forward",810)
     mc(None,"left",0)
-    mc(None,"forward",400)
-    mc(None,"right",0)
-    mc(None,"forward",400)
-    mc(None,"right",0)
-    mc(None,"forward",400)
+    mc(None,"forward",1215)
     mc(None,"left",0)
-    mc(None,"forward",400)
-    mc(None,"reverse",-400)
-
+    mc(None,"forward",810)
+    mc(None,"left",0)
+    mc(None,"left",0)
+    mc(None,"forward",1215)
+    mc(None,"right",0)
+    mc(None,"forward",405)
